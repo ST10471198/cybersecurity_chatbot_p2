@@ -6,7 +6,98 @@
         xmlns:local="clr-namespace:cybersecurity_chatbot_p2"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid>
+    <Grid><!-- start of parent-->
         
-    </Grid>
+        <!-- logo grid -->
+
+        <Grid x:Name="home_grid" Visibility="Visible">
+
+            <!-- Logo -->
+            <Image 
+                Source="/logo.jpeg"
+                Height="200"
+                Width="300"
+                Margin="0,0,0,200"
+                   />
+            <!-- welcome message-->
+            <TextBlock
+                Text="Welcome to AI chatbot, click continue button"
+                Height="20"
+                Width="270"
+                TextAlignment="Center"
+                Margin="0,30,0,0"
+                FontFamily="Arial Rounded MT Bold"
+                />
+
+            <!-- button to continue-->
+            <Button 
+                Height="40"
+                Width="300"
+                Margin="0,200,0,0"
+                Content="Proceed"
+                Click="proceed"
+                />
+
+        </Grid>
+
+        <!-- 
+            USERNAME GRID
+            This grid is for prompting the user for username.
+            It contains a logo for AI, a textbox for users to enter their name,
+            and a submit button to save the username.
+            Hidden .
+        -->
+        <Grid x:Name="username_grid" Visibility="Hidden">
+
+
+            <!-- Logo -->
+            <Image 
+                Source="/logo.jpeg"
+                Height="200"
+                Width="300"
+                Margin="0,0,0,200"
+                   />
+            <!-- Hint message-->
+            <TextBlock
+                Text="Enter username"
+                Height="20"
+                Width="270"
+                TextAlignment="Justify"
+                Margin="0,30,0,0"
+                FontFamily="Arial Rounded MT Bold"
+                />
+
+            <!-- Enter/Prompt username-->
+            <TextBox
+                Height="40"
+                Width="270"
+                TextAlignment="Center"
+                Margin="0,100,0,0"
+                FontFamily="Arial Rounded MT Bold"
+                x:Name="usernames_input"
+                />
+
+            <!-- error message-->
+            <TextBlock
+                Text="please enter username to continue..."
+                Height="20"
+                Width="270"
+                TextAlignment="Justify"
+                Margin="0,180,0,0"
+                Foreground="Red"
+                FontFamily="Arial Rounded MT Bold"
+                />
+
+            <!-- button to submit name-->
+            <Button 
+                Height="40"
+                Width="270"
+                Margin="0,250,0,0"
+                Content="submit username"
+                Click="submit_name"
+                />
+
+        </Grid>
+
+    </Grid><!-- end of parent-->
 </Window>
