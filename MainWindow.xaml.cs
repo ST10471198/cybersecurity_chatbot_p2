@@ -31,6 +31,8 @@ namespace cybersecurity_chatbot_p2
             //creating an instance for the class voice_greeting
             new voice_greeting() { };
 
+            //creating an instance of the respond class with a constructor
+            new respond(reply, ignore) { };
 
         }//end of constructor
 
