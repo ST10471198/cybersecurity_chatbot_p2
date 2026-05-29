@@ -6,98 +6,186 @@
         xmlns:local="clr-namespace:cybersecurity_chatbot_p2"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid><!-- start of parent-->
-        
-        <!-- logo grid -->
+    <Grid Background="White">
 
-        <Grid x:Name="home_grid" Visibility="Visible">
-
-            <!-- Logo -->
+        <!-- HOME GRID -->
+        <Grid 
+            x:Name="home_grid" 
+            Visibility="Visible" 
+            Background="White">
+            
             <Image 
-                Source="/logo.jpeg"
-                Height="200"
-                Width="300"
-                Margin="0,0,0,200"
-                   />
-            <!-- welcome message-->
-            <TextBlock
-                Text="Welcome to AI chatbot, click continue button"
-                Height="20"
-                Width="270"
-                TextAlignment="Center"
+                Source="/logo.jpeg" 
+                Height="200" 
+                Width="300" 
+                Margin="0,0,0,200"/>
+            
+            <TextBlock 
+                Text="Welcome to Ruby, your Cybersecurity Assistant!" 
+                Height="30" 
+                Width="400" 
+                TextAlignment="Center" 
                 Margin="0,30,0,0"
-                FontFamily="Arial Rounded MT Bold"
-                />
-
-            <!-- button to continue-->
+                FontFamily="Segoe UI" 
+                FontWeight="Bold" 
+                FontSize="16"
+                Foreground="#2E7D32"/>
+            
+            <TextBlock 
+                Text="Click Continue to start learning about online safety"
+                Height="20" 
+                Width="350" 
+                TextAlignment="Center" 
+                Margin="0,65,0,0"
+                FontFamily="Segoe UI" 
+                FontSize="12" 
+                Foreground="#555555"/>
+            
             <Button 
-                Height="40"
-                Width="300"
-                Margin="0,200,0,0"
-                Content="Proceed"
-                Click="proceed"
-                />
-
+                Height="45" 
+                Width="200" 
+                Margin="0,200,0,0" 
+                Content="Continue"
+                Click="proceed" 
+                Background="#4CAF50" 
+                Foreground="White"
+                FontWeight="Bold" 
+                FontSize="14" 
+                FontFamily="Segoe UI"
+                BorderBrush="#388E3C" 
+                BorderThickness="1"/>
+            
         </Grid>
 
-        <!-- 
-            USERNAME GRID
-            This grid is for prompting the user for username.
-            It contains a logo for AI, a textbox for users to enter their name,
-            and a submit button to save the username.
-            Hidden .
-        -->
-        <Grid x:Name="username_grid" Visibility="Hidden">
-
-
-            <!-- Logo -->
+        <!-- USERNAME GRID -->
+        <Grid 
+            x:Name="username_grid" 
+            Visibility="Hidden" 
+            Background="White">
+            
             <Image 
-                Source="/logo.jpeg"
-                Height="200"
-                Width="300"
-                Margin="0,0,0,200"
-                   />
-            <!-- Hint message-->
-            <TextBlock
-                Text="Enter username"
-                Height="20"
-                Width="270"
-                TextAlignment="Justify"
+                Source="/logo.jpeg" 
+                Height="150" 
+                Width="225" 
+                Margin="0,0,0,200"/>
+            
+            <TextBlock 
+                Text="Enter your name to get started"
+                Height="25" 
+                Width="300" 
+                TextAlignment="Center" 
                 Margin="0,30,0,0"
-                FontFamily="Arial Rounded MT Bold"
-                />
-
-            <!-- Enter/Prompt username-->
-            <TextBox
-                Height="40"
-                Width="270"
-                TextAlignment="Center"
+                FontFamily="Segoe UI" 
+                FontWeight="Bold" 
+                FontSize="14"
+                Foreground="#2E7D32"/>
+            
+            <TextBox 
+                Height="45" 
+                Width="280" 
+                TextAlignment="Center" 
                 Margin="0,100,0,0"
-                FontFamily="Arial Rounded MT Bold"
+                FontFamily="Segoe UI" 
+                FontSize="14" 
                 x:Name="usernames_input"
-                />
-
-            <!-- error message-->
-            <TextBlock
-                Text="please enter username to continue..."
-                Height="20"
-                Width="270"
-                TextAlignment="Justify"
-                Margin="0,180,0,0"
-                Foreground="Red"
-                FontFamily="Arial Rounded MT Bold"
-                />
-
-            <!-- button to submit name-->
+                Background="White" 
+                BorderBrush="#4CAF50" 
+                BorderThickness="2"
+                Foreground="#333333" 
+                CaretBrush="#4CAF50"/>
+            
+            <TextBlock 
+                Text="Please enter your name to continue..."
+                Height="20" 
+                Width="270" 
+                TextAlignment="Center" 
+                Margin="0,160,0,0"
+                Foreground="#F44336" 
+                FontFamily="Segoe UI" 
+                FontSize="11"
+                Visibility="Collapsed" 
+                x:Name="errorMessage"/>
+            
             <Button 
-                Height="40"
-                Width="270"
-                Margin="0,250,0,0"
-                Content="submit username"
-                Click="submit_name"
-                />
-
+                Height="45" 
+                Width="200" 
+                Margin="0,250,0,0" 
+                Content="Start Chatting"
+                Click="submit_name" 
+                Background="#4CAF50" 
+                Foreground="White"
+                FontWeight="Bold" 
+                FontSize="14" 
+                FontFamily="Segoe UI"
+                BorderBrush="#388E3C" 
+                BorderThickness="1"/>
+            
         </Grid>
 
-    </Grid><!-- end of parent-->
+        <!-- CHAT GRID -->
+        <Grid 
+            x:Name="chat_grid" 
+            Visibility="Hidden" 
+            Background="White">
+            <Border 
+                Height="55" 
+                VerticalAlignment="Top" 
+                Background="#E8F5E9">
+                
+                <TextBlock 
+                    Text="Ruby - Cybersecurity Assistant" 
+                    VerticalAlignment="Center" 
+                    HorizontalAlignment="Center"
+                    Foreground="#2E7D32" 
+                    FontSize="18" 
+                    FontWeight="Bold"
+                    FontFamily="Segoe UI"/>
+                
+            </Border>
+
+            <ListView 
+                x:Name="chats" 
+                Height="380" 
+                Margin="10,70,10,0"
+                Background="White" 
+                BorderBrush="#C8E6C9"
+                BorderThickness="1"/>
+
+            <TextBox x:Name="question" 
+                     Height="50" 
+                     Width="600"
+                     Margin="10,0,160,15"
+                     VerticalAlignment="Bottom" 
+                     FontFamily="Segoe UI" FontSize="13"
+                     Padding="15,10,15,10" 
+                     Background="White" 
+                     BorderBrush="#4CAF50"
+                     BorderThickness="2" 
+                     Foreground="#333333" 
+                     CaretBrush="#4CAF50"/>
+
+            <Button Height="50" 
+                    Width="150" 
+                    Margin="620,0,10,15" 
+                    VerticalAlignment="Bottom"
+                    Content="Send" 
+                    Click="send" 
+                    Background="#4CAF50" 
+                    Foreground="White"
+                    FontWeight="Bold" 
+                    FontSize="14" 
+                    FontFamily="Segoe UI"
+                    BorderBrush="#388E3C" 
+                    BorderThickness="1"/>
+
+            <TextBlock 
+                Text="Ask me about: passwords, scams, privacy, or phishing"
+                VerticalAlignment="Bottom" 
+                Margin="15,0,0,75" 
+                FontSize="10"       
+                Foreground="#888888" 
+                FontFamily="Segoe UI"/>
+        </Grid>
+
+    </Grid>
 </Window>
