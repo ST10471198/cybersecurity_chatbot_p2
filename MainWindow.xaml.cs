@@ -16,11 +16,9 @@ namespace cybersecurity_chatbot_p2
     public partial class MainWindow : Window
     {//start of class
 
-        //creating an instance of ArrayList
         ArrayList reply = new ArrayList();
         ArrayList ignore = new ArrayList();
 
-        //declaring all class instances
         private response_finder finder;
         private response_handler handler;
         private topic_detector detector;
@@ -28,47 +26,34 @@ namespace cybersecurity_chatbot_p2
         private sentiment_detector sentimentDetector;
         private task_manager taskManager;
         private quiz_manager quizManager;
+        private nlp_processor nlpProcessor;
 
-        //variables to store the last detected topic for follow-up questions
         private string username = string.Empty;
         private string lastTopic = string.Empty;
 
-        // Task Assistant variables
         private bool awaitingReminderResponse = false;
         private string pendingTaskName = "";
         private string pendingTaskDescription = "";
 
-        // Activity Log
         private List<string> activityLog = new List<string>();
 
         public MainWindow()
         {//start of constructor
             InitializeComponent();
 
-            //creating an instance for the class voice_greeting
             new voice_greeting();
-
-            //creating an instance of the respond class with a constructor
             new respond(reply, ignore);
 
-            //initializing all the class instances
             finder = new response_finder(reply);
             handler = new response_handler(reply, ignore);
             detector = new topic_detector();
             displayer = new message_displayer(chats);
             sentimentDetector = new sentiment_detector(reply, finder, displayer);
-
-            // Initialize Quiz Manager
             quizManager = new quiz_manager();
+            nlpProcessor = new nlp_processor();
 
-            // Add welcome message to activity log
             AddToActivityLog("Application started");
-
         }//end of constructor
-
-        // ============================================================
-        // NAVIGATION METHODS
-        // ============================================================
 
         private void proceed(object sender, RoutedEventArgs e)
         {//start of method
@@ -114,20 +99,13 @@ namespace cybersecurity_chatbot_p2
                 }//end of else
             }//end of else
 
-            // Initialize TaskManager after username is set
             taskManager = new task_manager(username);
 
-            // Add to activity log
             AddToActivityLog("User logged in: " + username);
 
             username_grid.Visibility = Visibility.Hidden;
             chat_grid.Visibility = Visibility.Visible;
-
         }//end of method
-
-        // ============================================================
-        // MAIN SEND METHOD
-        // ============================================================
 
         private void send(object sender, RoutedEventArgs e)
         {//start of send method
@@ -144,14 +122,11 @@ namespace cybersecurity_chatbot_p2
             displayer.ShowMessage(username, userInput);
             AddToActivityLog("User: " + userInput);
 
-            // ============================================================
-            // PRIORITY 1: Are we waiting for a reminder response?
-            // ============================================================
+            // PRIORITY 1: Reminder response
             if (awaitingReminderResponse)
             {//start of if
                 string lowerInput = userInput.ToLower().Trim();
 
-                // Check if user said yes
                 if (lowerInput.Contains("yes") || lowerInput.Contains("yeah") || lowerInput.Contains("yep") ||
                     lowerInput.Contains("sure") || lowerInput.Contains("ok") || lowerInput.Contains("okay"))
                 {//start of if
@@ -160,7 +135,6 @@ namespace cybersecurity_chatbot_p2
                     question.Clear();
                     return;
                 }//end of if
-                // Check if user said no
                 else if (lowerInput.Contains("no") || lowerInput.Contains("nope") || lowerInput.Contains("nah"))
                 {//start of else if
                     string result = taskManager.add_task(pendingTaskName, pendingTaskDescription, "");
@@ -174,16 +148,13 @@ namespace cybersecurity_chatbot_p2
                 }//end of else if
                 else
                 {//start of else
-                    // If user entered something else, ask again
                     displayer.ShowMessage("Ruby", "Please answer Yes or No. Would you like a reminder for this task?");
                     question.Clear();
                     return;
                 }//end of else
             }//end of if
 
-            // ============================================================
-            // PRIORITY 2: Are we waiting for days input?
-            // ============================================================
+            // PRIORITY 2: Days input
             if (!string.IsNullOrEmpty(pendingTaskName) && IsNumeric(userInput))
             {//start of if
                 int days = int.Parse(userInput);
@@ -206,36 +177,35 @@ namespace cybersecurity_chatbot_p2
                 }//end of else
             }//end of if
 
-            // ============================================================
             // PRIORITY 3: Task Assistant Commands
-            // ============================================================
             if (taskManager != null && handle_task_assistant_command(userInput))
             {//start of if
                 question.Clear();
                 return;
             }//end of if
 
-            // ============================================================
-            // PRIORITY 4: Quiz Commands
-            // ============================================================
+            // PRIORITY 4: NLP Processing
+            if (process_with_nlp(userInput))
+            {//start of if
+                question.Clear();
+                return;
+            }//end of if
+
+            // PRIORITY 5: Quiz Commands
             if (handle_quiz_command(userInput))
             {//start of if
                 question.Clear();
                 return;
             }//end of if
 
-            // ============================================================
-            // PRIORITY 5: Sentiment Detection
-            // ============================================================
+            // PRIORITY 6: Sentiment Detection
             if (sentimentDetector.DetectSentiment(userInput))
             {//start of if
                 question.Clear();
                 return;
             }//end of if
 
-            // ============================================================
-            // PRIORITY 6: Follow-up Questions
-            // ============================================================
+            // PRIORITY 7: Follow-up Questions
             string fullInput = userInput.ToLower();
             if (fullInput.Contains("more") || fullInput.Contains("another tip") ||
                 fullInput.Contains("tell me more") || fullInput.Contains("explain more"))
@@ -250,9 +220,7 @@ namespace cybersecurity_chatbot_p2
                 }//end of if
             }//end of if
 
-            // ============================================================
-            // PRIORITY 7: Interest Statements (Memory Feature)
-            // ============================================================
+            // PRIORITY 8: Interest Statements
             if (fullInput.Contains("interested in"))
             {//start of if
                 string interest = extract_interest(userInput);
@@ -267,9 +235,7 @@ namespace cybersecurity_chatbot_p2
                 }//end of if
             }//end of if
 
-            // ============================================================
-            // PRIORITY 8: Activity Log Command
-            // ============================================================
+            // PRIORITY 9: Activity Log Command
             if (fullInput.Contains("activity log") || fullInput.Contains("show log") ||
                 fullInput.Contains("what have you done") || fullInput.Contains("show activity"))
             {//start of if
@@ -280,9 +246,7 @@ namespace cybersecurity_chatbot_p2
                 return;
             }//end of if
 
-            // ============================================================
-            // PRIORITY 9: Topic Detection
-            // ============================================================
+            // PRIORITY 10: Topic Detection
             string[] words = userInput.ToLower().Split(new char[] { ' ', ',', '.', '!', '?', ';', ':', '-' },
                                                        StringSplitOptions.RemoveEmptyEntries);
 
@@ -301,7 +265,6 @@ namespace cybersecurity_chatbot_p2
             }//end of else
 
             question.Clear();
-
         }//end of send method
 
         // ============================================================
@@ -313,7 +276,6 @@ namespace cybersecurity_chatbot_p2
 
             string lowerInput = userInput.ToLower().Trim();
 
-            // Check for "show tasks" or "view tasks"
             if ((lowerInput.Contains("show") || lowerInput.Contains("view") || lowerInput.Contains("list")) &&
                 lowerInput.Contains("task"))
             {//start of if
@@ -323,7 +285,6 @@ namespace cybersecurity_chatbot_p2
                 return true;
             }//end of if
 
-            // Check for "show pending tasks"
             if (lowerInput.Contains("pending") && lowerInput.Contains("task"))
             {//start of if
                 string pending = taskManager.get_pending_task_names();
@@ -331,7 +292,6 @@ namespace cybersecurity_chatbot_p2
                 return true;
             }//end of if
 
-            // Check for "add task" or "create task"
             if (lowerInput.Contains("add task") || lowerInput.Contains("create task") ||
                 lowerInput.Contains("new task") || lowerInput.Contains("add a task"))
             {//start of if
@@ -354,7 +314,6 @@ namespace cybersecurity_chatbot_p2
                 }//end of else
             }//end of if
 
-            // Check for "mark task as complete"
             if ((lowerInput.Contains("mark") || lowerInput.Contains("complete")) &&
                 (lowerInput.Contains("complete") || lowerInput.Contains("done") || lowerInput.Contains("task")))
             {//start of if
@@ -382,7 +341,6 @@ namespace cybersecurity_chatbot_p2
                 }//end of else
             }//end of if
 
-            // Check for "delete task"
             if ((lowerInput.Contains("delete") || lowerInput.Contains("remove")) && lowerInput.Contains("task"))
             {//start of if
                 string taskName = extract_task_name_for_action(userInput);
@@ -410,7 +368,6 @@ namespace cybersecurity_chatbot_p2
             }//end of if
 
             return false;
-
         }//end of method
 
         private string extract_task_info(string input)
@@ -444,19 +401,16 @@ namespace cybersecurity_chatbot_p2
             }//end of if
 
             return "";
-
         }//end of method
 
         private int extract_days(string input)
         {//start of method
-
             Match match = Regex.Match(input, @"\d+");
             if (match.Success)
             {//start of if
                 return int.Parse(match.Value);
             }//end of if
             return 0;
-
         }//end of method
 
         private string extract_task_name_for_action(string input)
@@ -481,7 +435,6 @@ namespace cybersecurity_chatbot_p2
             }//end of for
 
             return "";
-
         }//end of method
 
         private bool IsNumeric(string input)
@@ -503,27 +456,345 @@ namespace cybersecurity_chatbot_p2
         }//end of method
 
         // ============================================================
-        // QUIZ METHODS - TASK 2
+        // NLP PROCESSING METHODS - TASK 3
+        // ============================================================
+
+        private bool process_with_nlp(string userInput)
+        {//start of method
+
+            string intent = nlpProcessor.DetectIntent(userInput);
+
+            if (intent == "unknown")
+            {//start of if
+                return false;
+            }//end of if
+
+            switch (intent)
+            {//start of switch
+                case "add_task":
+                    return handle_nlp_add_task(userInput);
+
+                case "show_tasks":
+                    return handle_nlp_show_tasks(userInput);
+
+                case "complete_task":
+                    return handle_nlp_complete_task(userInput);
+
+                case "delete_task":
+                    return handle_nlp_delete_task(userInput);
+
+                case "set_reminder":
+                    return handle_nlp_set_reminder(userInput);
+
+                case "start_quiz":
+                    return handle_nlp_start_quiz(userInput);
+
+                case "show_log":
+                    return handle_nlp_show_log(userInput);
+
+                case "help":
+                    return handle_nlp_help(userInput);
+
+                case "greeting":
+                    return handle_nlp_greeting(userInput);
+
+                case "worried":
+                    return handle_nlp_worried(userInput);
+
+                case "frustrated":
+                    return handle_nlp_frustrated(userInput);
+
+                case "happy":
+                    return handle_nlp_happy(userInput);
+
+                case "sad":
+                    return handle_nlp_sad(userInput);
+
+                case "topic_question":
+                    return false;
+
+                default:
+                    return false;
+            }//end of switch
+        }//end of method
+
+        private bool handle_nlp_add_task(string userInput)
+        {//start of method
+            string taskInfo = nlpProcessor.ExtractTaskDetails(userInput);
+
+            if (string.IsNullOrEmpty(taskInfo))
+            {//start of if
+                displayer.ShowMessage("Ruby", "I'd be happy to add that task. What task would you like me to add?");
+                AddToActivityLog("NLP: Asked for task description");
+                return true;
+            }//end of if
+
+            string reminderTime = nlpProcessor.ExtractReminderTime(userInput);
+            int days = nlpProcessor.ExtractNumberOfDays(userInput);
+
+            if (!string.IsNullOrEmpty(reminderTime) && days >= 0)
+            {//start of if
+                if (days == 0)
+                {//start of if
+                    string reminderDate = DateTime.Now.ToString("yyyy-MM-dd");
+                    string result = taskManager.add_task(taskInfo, "Task: " + taskInfo, reminderDate);
+                    displayer.ShowMessage("Ruby", "Got it! " + result);
+                    AddToActivityLog("NLP: Task added with reminder - " + taskInfo + " (Today)");
+                }//end of if
+                else if (days == 1 && reminderTime.Contains("tomorrow"))
+                {//start of else if
+                    string reminderDate = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
+                    string result = taskManager.add_task(taskInfo, "Task: " + taskInfo, reminderDate);
+                    displayer.ShowMessage("Ruby", "Got it! " + result);
+                    AddToActivityLog("NLP: Task added with reminder - " + taskInfo + " (Tomorrow)");
+                }//end of else if
+                else if (days == 7 && reminderTime.Contains("next week"))
+                {//start of else if
+                    string reminderDate = DateTime.Now.AddDays(7).ToString("yyyy-MM-dd");
+                    string result = taskManager.add_task(taskInfo, "Task: " + taskInfo, reminderDate);
+                    displayer.ShowMessage("Ruby", "Got it! " + result);
+                    AddToActivityLog("NLP: Task added with reminder - " + taskInfo + " (Next week)");
+                }//end of else if
+                else if (days > 0)
+                {//start of else if
+                    string reminderDate = DateTime.Now.AddDays(days).ToString("yyyy-MM-dd");
+                    string result = taskManager.add_task(taskInfo, "Task: " + taskInfo, reminderDate);
+                    displayer.ShowMessage("Ruby", "Got it! " + result);
+                    AddToActivityLog("NLP: Task added with reminder - " + taskInfo + " (in " + days + " days)");
+                }//end of else if
+                else
+                {//start of else
+                    string result = taskManager.add_task(taskInfo, "Task: " + taskInfo, "");
+                    displayer.ShowMessage("Ruby", "Task added: '" + taskInfo + "' Would you like to set a reminder for this task?");
+                    AddToActivityLog("NLP: Task added - " + taskInfo + " (No reminder)");
+                    awaitingReminderResponse = true;
+                    pendingTaskName = taskInfo;
+                    pendingTaskDescription = "Task: " + taskInfo;
+                }//end of else
+            }//end of if
+            else
+            {//start of else
+                pendingTaskName = taskInfo;
+                pendingTaskDescription = "Task: " + taskInfo;
+                displayer.ShowMessage("Ruby", "Task added: '" + taskInfo + "' Would you like to set a reminder for this task?");
+                AddToActivityLog("NLP: Task pending - " + taskInfo + " (Awaiting reminder)");
+                awaitingReminderResponse = true;
+            }//end of else
+
+            return true;
+        }//end of method
+
+        private bool handle_nlp_show_tasks(string userInput)
+        {//start of method
+            string tasks = taskManager.view_tasks();
+            displayer.ShowMessage("Ruby", tasks);
+            AddToActivityLog("NLP: Viewed tasks");
+            return true;
+        }//end of method
+
+        private bool handle_nlp_complete_task(string userInput)
+        {//start of method
+            string taskName = nlpProcessor.ExtractTaskNameForAction(userInput);
+
+            if (string.IsNullOrEmpty(taskName))
+            {//start of if
+                displayer.ShowMessage("Ruby", "Which task would you like to mark as complete? Please specify the task name.");
+                AddToActivityLog("NLP: Asked for task to complete");
+                return true;
+            }//end of if
+
+            int taskId = taskManager.get_task_id_from_name(taskName);
+            if (taskId > 0)
+            {//start of if
+                string result = taskManager.complete_task(taskId);
+                displayer.ShowMessage("Ruby", result);
+                AddToActivityLog("NLP: Task completed - " + taskName);
+            }//end of if
+            else
+            {//start of else
+                displayer.ShowMessage("Ruby", "Task not found. Please check the task name.");
+                AddToActivityLog("NLP: Task not found - " + taskName);
+            }//end of else
+
+            return true;
+        }//end of method
+
+        private bool handle_nlp_delete_task(string userInput)
+        {//start of method
+            string taskName = nlpProcessor.ExtractTaskNameForAction(userInput);
+
+            if (string.IsNullOrEmpty(taskName))
+            {//start of if
+                displayer.ShowMessage("Ruby", "Which task would you like to delete? Please specify the task name.");
+                AddToActivityLog("NLP: Asked for task to delete");
+                return true;
+            }//end of if
+
+            int taskId = taskManager.get_task_id_from_name(taskName);
+            if (taskId > 0)
+            {//start of if
+                string result = taskManager.delete_task(taskId);
+                displayer.ShowMessage("Ruby", result);
+                AddToActivityLog("NLP: Task deleted - " + taskName);
+            }//end of if
+            else
+            {//start of else
+                displayer.ShowMessage("Ruby", "Task not found. Please check the task name.");
+                AddToActivityLog("NLP: Task not found - " + taskName);
+            }//end of else
+
+            return true;
+        }//end of method
+
+        private bool handle_nlp_set_reminder(string userInput)
+        {//start of method
+            string taskInfo = nlpProcessor.ExtractTaskDetails(userInput);
+
+            if (string.IsNullOrEmpty(taskInfo))
+            {//start of if
+                displayer.ShowMessage("Ruby", "What would you like me to remind you about?");
+                AddToActivityLog("NLP: Asked for reminder description");
+                return true;
+            }//end of if
+
+            string reminderTime = nlpProcessor.ExtractReminderTime(userInput);
+            int days = nlpProcessor.ExtractNumberOfDays(userInput);
+
+            if (days < 0)
+            {//start of if
+                pendingTaskName = taskInfo;
+                pendingTaskDescription = "Reminder: " + taskInfo;
+                displayer.ShowMessage("Ruby", "Reminder set for '" + taskInfo + "'. How many days from now would you like the reminder?");
+                AddToActivityLog("NLP: Asked for reminder days");
+                awaitingReminderResponse = true;
+                return true;
+            }//end of if
+
+            string reminderDate = "";
+            if (days == 1 && reminderTime.Contains("tomorrow"))
+            {//start of if
+                reminderDate = DateTime.Now.AddDays(1).ToString("yyyy-MM-dd");
+                displayer.ShowMessage("Ruby", "Reminder set for '" + taskInfo + "' on tomorrow's date.");
+                AddToActivityLog("NLP: Reminder set - " + taskInfo + " (Tomorrow)");
+            }//end of if
+            else if (days == 7 && reminderTime.Contains("next week"))
+            {//start of else if
+                reminderDate = DateTime.Now.AddDays(7).ToString("yyyy-MM-dd");
+                displayer.ShowMessage("Ruby", "Reminder set for '" + taskInfo + "' on next week's date.");
+                AddToActivityLog("NLP: Reminder set - " + taskInfo + " (Next week)");
+            }//end of else if
+            else if (days == 0 && reminderTime.Contains("today"))
+            {//start of else if
+                reminderDate = DateTime.Now.ToString("yyyy-MM-dd");
+                displayer.ShowMessage("Ruby", "Reminder set for '" + taskInfo + "' on today's date.");
+                AddToActivityLog("NLP: Reminder set - " + taskInfo + " (Today)");
+            }//end of else if
+            else if (days > 0)
+            {//start of else if
+                reminderDate = DateTime.Now.AddDays(days).ToString("yyyy-MM-dd");
+                displayer.ShowMessage("Ruby", "Reminder set for '" + taskInfo + "' on " + reminderDate + ".");
+                AddToActivityLog("NLP: Reminder set - " + taskInfo + " (in " + days + " days)");
+            }//end of else if
+
+            taskManager.add_task(taskInfo, "Reminder: " + taskInfo, reminderDate);
+            return true;
+        }//end of method
+
+        private bool handle_nlp_start_quiz(string userInput)
+        {//start of method
+            string result = quizManager.StartQuiz();
+            displayer.ShowMessage("Ruby", result);
+            AddToActivityLog("NLP: Quiz started");
+            return true;
+        }//end of method
+
+        private bool handle_nlp_show_log(string userInput)
+        {//start of method
+            string log = GetActivityLog();
+            displayer.ShowMessage("Ruby", log);
+            AddToActivityLog("NLP: Activity log viewed");
+            return true;
+        }//end of method
+
+        private bool handle_nlp_help(string userInput)
+        {//start of method
+            quick_action_help(null, null);
+            return true;
+        }//end of method
+
+        private bool handle_nlp_greeting(string userInput)
+        {//start of method
+            string[] greetings = {
+                "Hello " + username + "! How can I help you with cybersecurity today?",
+                "Hi " + username + "! I'm here to help you stay safe online.",
+                "Hey " + username + "! What cybersecurity topic would you like to learn about?",
+                "Greetings " + username + "! Ready to learn about online safety?"
+            };
+            Random random = new Random();
+            displayer.ShowMessage("Ruby", greetings[random.Next(greetings.Length)]);
+            AddToActivityLog("NLP: Greeting response");
+            return true;
+        }//end of method
+
+        private bool handle_nlp_worried(string userInput)
+        {//start of method
+            string response = "It's completely understandable to feel that way. Cybersecurity can be overwhelming.\n\n" +
+                             "Here's a tip to help you stay safe:\n" +
+                             finder.FindResponseByTopic("scam");
+            displayer.ShowMessage("Ruby", response);
+            AddToActivityLog("NLP: Worried sentiment detected");
+            return true;
+        }//end of method
+
+        private bool handle_nlp_frustrated(string userInput)
+        {//start of method
+            string response = "I understand you're frustrated. Let's work through the issue step by step.\n\n" +
+                             "Tell me what specific cybersecurity concern you have, and I'll help you understand it.";
+            displayer.ShowMessage("Ruby", response);
+            AddToActivityLog("NLP: Frustrated sentiment detected");
+            return true;
+        }//end of method
+
+        private bool handle_nlp_happy(string userInput)
+        {//start of method
+            string[] responses = {
+                "That's great to hear! I'm glad you're having a good day.",
+                "Awesome! Positivity is always welcome here.",
+                "I'm happy for you! Let me know if you need any cybersecurity tips."
+            };
+            Random random = new Random();
+            displayer.ShowMessage("Ruby", responses[random.Next(responses.Length)]);
+            AddToActivityLog("NLP: Happy sentiment detected");
+            return true;
+        }//end of method
+
+        private bool handle_nlp_sad(string userInput)
+        {//start of method
+            string response = "I'm sorry you're feeling this way. I'm here to support you.\n\n" +
+                             "When you're ready, I can help you with any cybersecurity questions you have.";
+            displayer.ShowMessage("Ruby", response);
+            AddToActivityLog("NLP: Sad sentiment detected");
+            return true;
+        }//end of method
+
+        // ============================================================
+        // QUIZ METHODS
         // ============================================================
 
         private bool handle_quiz_command(string userInput)
         {//start of method
             string lowerInput = userInput.ToLower().Trim();
 
-            // Check if quiz is active and user is answering
             if (quizManager.IsQuizActive())
             {//start of if
-                // Check if user wants to quit
                 if (lowerInput == "quit" || lowerInput == "exit")
                 {//start of if
                     string results = quizManager.SubmitAnswer("quit");
-
                     displayer.ShowMessage("Ruby", results);
                     AddToActivityLog("Quiz ended early");
                     return true;
                 }//end of if
 
-                // Submit answer
                 string result = quizManager.SubmitAnswer(userInput);
                 displayer.ShowMessage("Ruby", result);
 
@@ -535,7 +806,6 @@ namespace cybersecurity_chatbot_p2
                 return true;
             }//end of if
 
-            // Check for "start quiz" or "play quiz"
             if (lowerInput.Contains("start quiz") || lowerInput.Contains("play quiz") ||
                 lowerInput.Contains("take quiz") || lowerInput.Contains("quiz me") ||
                 lowerInput.Contains("test me"))
@@ -555,7 +825,6 @@ namespace cybersecurity_chatbot_p2
 
         private string extract_interest(string input)
         {//start of method
-
             string lower = input.ToLower();
             int index = lower.IndexOf("interested in");
             if (index >= 0)
@@ -565,7 +834,6 @@ namespace cybersecurity_chatbot_p2
                 return words[0].Trim('.', '!', '?');
             }//end of if
             return string.Empty;
-
         }//end of method
 
         private void store_interest(string username, string interest)
@@ -605,7 +873,6 @@ namespace cybersecurity_chatbot_p2
             {//start of else
                 File.AppendAllText(filename, line + "\n");
             }//end of else
-
         }//end of method
 
         // ============================================================
@@ -617,7 +884,6 @@ namespace cybersecurity_chatbot_p2
             string timestamp = DateTime.Now.ToString("HH:mm:ss");
             activityLog.Add("[" + timestamp + "] " + action);
 
-            // Keep only last 50 entries
             if (activityLog.Count > 50)
             {//start of if
                 activityLog.RemoveAt(0);
@@ -632,8 +898,6 @@ namespace cybersecurity_chatbot_p2
             }//end of if
 
             string result = "Recent Activity Log:\n\n";
-
-            // Show last 10 entries (or all if less than 10)
             int startIndex = Math.Max(0, activityLog.Count - 10);
 
             for (int i = startIndex; i < activityLog.Count; i++)
