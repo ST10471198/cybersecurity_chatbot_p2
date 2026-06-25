@@ -60,6 +60,7 @@
     <Compile Include="response_finder.cs" />
     <Compile Include="response_handler.cs" />
     <Compile Include="sentiment_detector.cs" />
+    <Compile Include="task_manager.cs" />
     <Compile Include="topic_detector.cs" />
     <Compile Include="voice_greeting.cs" />
     <Page Include="MainWindow.xaml">

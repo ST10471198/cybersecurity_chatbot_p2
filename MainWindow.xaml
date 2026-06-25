@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:cybersecurity_chatbot_p2"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Ruby - Cybersecurity Assistant" Height="600" Width="900">
+
     <Grid Background="White">
 
         <!-- HOME GRID -->
@@ -13,37 +14,37 @@
             x:Name="home_grid" 
             Visibility="Visible" 
             Background="White">
-            
+
             <Image 
                 Source="/logo.jpeg" 
                 Height="200" 
                 Width="300" 
                 Margin="0,0,0,200"/>
-            
+
             <TextBlock 
                 Text="Welcome to Ruby, your Cybersecurity Assistant!" 
                 Height="30" 
-                Width="400" 
+                Width="450" 
                 TextAlignment="Center" 
                 Margin="0,30,0,0"
                 FontFamily="Segoe UI" 
                 FontWeight="Bold" 
-                FontSize="16"
+                FontSize="18"
                 Foreground="#2E7D32"/>
-            
+
             <TextBlock 
                 Text="Click Continue to start learning about online safety"
                 Height="20" 
-                Width="350" 
+                Width="380" 
                 TextAlignment="Center" 
                 Margin="0,65,0,0"
                 FontFamily="Segoe UI" 
                 FontSize="12" 
                 Foreground="#555555"/>
-            
+
             <Button 
                 Height="45" 
-                Width="200" 
+                Width="220" 
                 Margin="0,200,0,0" 
                 Content="Continue"
                 Click="proceed" 
@@ -54,7 +55,7 @@
                 FontFamily="Segoe UI"
                 BorderBrush="#388E3C" 
                 BorderThickness="1"/>
-            
+
         </Grid>
 
         <!-- USERNAME GRID -->
@@ -62,29 +63,39 @@
             x:Name="username_grid" 
             Visibility="Hidden" 
             Background="White">
-            
+
             <Image 
                 Source="/logo.jpeg" 
                 Height="150" 
                 Width="225" 
                 Margin="0,0,0,200"/>
-            
+
             <TextBlock 
                 Text="Enter your name to get started"
                 Height="25" 
-                Width="300" 
+                Width="350" 
                 TextAlignment="Center" 
                 Margin="0,30,0,0"
                 FontFamily="Segoe UI" 
                 FontWeight="Bold" 
-                FontSize="14"
+                FontSize="16"
                 Foreground="#2E7D32"/>
-            
+
+            <TextBlock 
+                Text="I'll remember your name and personalize our conversation"
+                Height="20" 
+                Width="350" 
+                TextAlignment="Center" 
+                Margin="0,55,0,0"
+                FontFamily="Segoe UI" 
+                FontSize="11" 
+                Foreground="#888888"/>
+
             <TextBox 
                 Height="45" 
-                Width="280" 
+                Width="300" 
                 TextAlignment="Center" 
-                Margin="0,100,0,0"
+                Margin="0,120,0,0"
                 FontFamily="Segoe UI" 
                 FontSize="14" 
                 x:Name="usernames_input"
@@ -93,22 +104,22 @@
                 BorderThickness="2"
                 Foreground="#333333" 
                 CaretBrush="#4CAF50"/>
-            
+
             <TextBlock 
                 Text="Please enter your name to continue..."
                 Height="20" 
                 Width="270" 
                 TextAlignment="Center" 
-                Margin="0,160,0,0"
+                Margin="0,180,0,0"
                 Foreground="#F44336" 
                 FontFamily="Segoe UI" 
                 FontSize="11"
                 Visibility="Collapsed" 
                 x:Name="errorMessage"/>
-            
+
             <Button 
                 Height="45" 
-                Width="200" 
+                Width="220" 
                 Margin="0,250,0,0" 
                 Content="Start Chatting"
                 Click="submit_name" 
@@ -119,7 +130,7 @@
                 FontFamily="Segoe UI"
                 BorderBrush="#388E3C" 
                 BorderThickness="1"/>
-            
+
         </Grid>
 
         <!-- CHAT GRID -->
@@ -127,61 +138,120 @@
             x:Name="chat_grid" 
             Visibility="Hidden" 
             Background="White">
+
+            <!-- Chat Header -->
             <Border 
-                Height="55" 
+                Height="60" 
                 VerticalAlignment="Top" 
-                Background="#E8F5E9">
-                
-                <TextBlock 
-                    Text="Ruby - Cybersecurity Assistant" 
-                    VerticalAlignment="Center" 
-                    HorizontalAlignment="Center"
-                    Foreground="#2E7D32" 
-                    FontSize="18" 
-                    FontWeight="Bold"
-                    FontFamily="Segoe UI"/>
-                
+                Background="#E8F5E9"
+                BorderBrush="#C8E6C9"
+                BorderThickness="0,0,0,1">
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock 
+                        Text="🛡️ " 
+                        VerticalAlignment="Center"
+                        FontSize="22"
+                        Foreground="#2E7D32"/>
+
+                    <TextBlock 
+                        Text="Ruby - Cybersecurity Assistant" 
+                        VerticalAlignment="Center"
+                        Foreground="#2E7D32" 
+                        FontSize="18" 
+                        FontWeight="Bold"
+                        FontFamily="Segoe UI"/>
+                </StackPanel>
+
             </Border>
 
+            <!-- Chat Messages List -->
             <ListView 
                 x:Name="chats" 
-                Height="380" 
-                Margin="10,70,10,0"
+                Height="390" 
+                Margin="10,75,10,10"
                 Background="White" 
                 BorderBrush="#C8E6C9"
                 BorderThickness="1"/>
 
-            <TextBox x:Name="question" 
-                     Height="50" 
-                     Width="600"
-                     Margin="10,0,160,15"
-                     VerticalAlignment="Bottom" 
-                     FontFamily="Segoe UI" FontSize="13"
-                     Padding="15,10,15,10" 
-                     Background="White" 
-                     BorderBrush="#4CAF50"
-                     BorderThickness="2" 
-                     Foreground="#333333" 
-                     CaretBrush="#4CAF50"/>
+            <!-- Input Area -->
+            <Grid VerticalAlignment="Bottom" Margin="10,0,10,15" Height="55">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-            <Button Height="50" 
-                    Width="150" 
-                    Margin="620,0,10,15" 
-                    VerticalAlignment="Bottom"
-                    Content="Send" 
-                    Click="send" 
-                    Background="#4CAF50" 
-                    Foreground="White"
-                    FontWeight="Bold" 
-                    FontSize="14" 
-                    FontFamily="Segoe UI"
-                    BorderBrush="#388E3C" 
-                    BorderThickness="1"/>
+                <!-- Quick Action Buttons -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Top" Margin="0,-35,0,0">
+                    <Button Content="📋 Tasks" 
+                            Height="25" 
+                            Width="60" 
+                            FontSize="9" 
+                            Background="#4CAF50" 
+                            Foreground="White"
+                            BorderBrush="#388E3C" 
+                            BorderThickness="1"
+                            Click="quick_action_tasks"/>
 
+                    <Button Content="🎮 Quiz" 
+                            Height="25" 
+                            Width="55" 
+                            FontSize="9" 
+                            Background="#FF9800" 
+                            Foreground="White"
+                            BorderBrush="#E65100" 
+                            BorderThickness="1"
+                            Margin="5,0,0,0"
+                            Click="quick_action_quiz"/>
+
+                    <Button Content="📊 Log" 
+                            Height="25" 
+                            Width="50" 
+                            FontSize="9" 
+                            Background="#2196F3" 
+                            Foreground="White"
+                            BorderBrush="#1565C0" 
+                            BorderThickness="1"
+                            Margin="5,0,0,0"
+                            Click="quick_action_log"/>
+                </StackPanel>
+
+                <TextBox x:Name="question" 
+                         Grid.Column="0"
+                         Height="50" 
+                         VerticalAlignment="Bottom"
+                         FontFamily="Segoe UI" 
+                         FontSize="13"
+                         Padding="15,10,15,10" 
+                         Background="White" 
+                         BorderBrush="#4CAF50"
+                         BorderThickness="2" 
+                         Foreground="#333333" 
+                         CaretBrush="#4CAF50"
+                         TextWrapping="Wrap"
+                         KeyDown="question_KeyDown"/>
+
+                <Button Height="50" 
+                        Width="120" 
+                        Grid.Column="1"
+                        Margin="10,0,0,0" 
+                        VerticalAlignment="Bottom"
+                        Content="Send →" 
+                        Click="send" 
+                        Background="#4CAF50" 
+                        Foreground="White"
+                        FontWeight="Bold" 
+                        FontSize="13" 
+                        FontFamily="Segoe UI"
+                        BorderBrush="#388E3C" 
+                        BorderThickness="1"/>
+            </Grid>
+
+            <!-- Input Hint -->
             <TextBlock 
-                Text="Ask me about: passwords, scams, privacy, or phishing"
+                Text="Ask me about: passwords, scams, privacy, phishing • Try: 'Add task', 'Show tasks', 'Start quiz'"
                 VerticalAlignment="Bottom" 
-                Margin="15,0,0,75" 
+                Margin="15,0,0,80" 
                 FontSize="10"       
                 Foreground="#888888" 
                 FontFamily="Segoe UI"/>
