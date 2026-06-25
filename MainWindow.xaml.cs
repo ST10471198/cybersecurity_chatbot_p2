@@ -35,6 +35,9 @@ namespace cybersecurity_chatbot_p2
         private string pendingTaskName = "";
         private string pendingTaskDescription = "";
 
+        // ============================================================
+        // ACTIVITY LOG - TASK 4
+        // ============================================================
         private List<string> activityLog = new List<string>();
 
         public MainWindow()
@@ -237,7 +240,8 @@ namespace cybersecurity_chatbot_p2
 
             // PRIORITY 9: Activity Log Command
             if (fullInput.Contains("activity log") || fullInput.Contains("show log") ||
-                fullInput.Contains("what have you done") || fullInput.Contains("show activity"))
+                fullInput.Contains("what have you done") || fullInput.Contains("show activity") ||
+                fullInput.Contains("show me the log") || fullInput.Contains("recent actions"))
             {//start of if
                 string log = GetActivityLog();
                 displayer.ShowMessage("Ruby", log);
@@ -800,7 +804,7 @@ namespace cybersecurity_chatbot_p2
 
                 if (!quizManager.IsQuizActive())
                 {//start of if
-                    AddToActivityLog("Quiz completed");
+                    AddToActivityLog("Quiz completed - Score: " + quizManager.GetScore() + "/" + quizManager.GetTotalQuestions());
                 }//end of if
 
                 return true;
@@ -876,7 +880,7 @@ namespace cybersecurity_chatbot_p2
         }//end of method
 
         // ============================================================
-        // ACTIVITY LOG METHODS
+        // ACTIVITY LOG METHODS - TASK 4
         // ============================================================
 
         private void AddToActivityLog(string action)
@@ -890,7 +894,7 @@ namespace cybersecurity_chatbot_p2
             }//end of if
         }//end of method
 
-        private string GetActivityLog()
+        public string GetActivityLog()
         {//start of method
             if (activityLog.Count == 0)
             {//start of if
@@ -898,6 +902,8 @@ namespace cybersecurity_chatbot_p2
             }//end of if
 
             string result = "Recent Activity Log:\n\n";
+
+            // Show last 10 entries
             int startIndex = Math.Max(0, activityLog.Count - 10);
 
             for (int i = startIndex; i < activityLog.Count; i++)
@@ -907,7 +913,7 @@ namespace cybersecurity_chatbot_p2
 
             if (activityLog.Count > 10)
             {//start of if
-                result += "\nShowing last 10 of " + activityLog.Count + " activities.";
+                result += "\nShowing last 10 of " + activityLog.Count + " activities. Use 'Show full log' to see all.";
             }//end of if
 
             return result;
@@ -947,11 +953,12 @@ namespace cybersecurity_chatbot_p2
                                  "  - 'Start quiz' - Begin the cybersecurity quiz\n" +
                                  "  - Answer with A, B, C, or D during the quiz\n" +
                                  "  - 'quit' during quiz to exit\n\n" +
+                                 "ACTIVITY LOG:\n" +
+                                 "  - 'Show activity log' - View recent actions\n" +
+                                 "  - 'Show full log' - View all activities\n\n" +
                                  "SECURITY TOPICS:\n" +
                                  "  - Ask me about: passwords, scams, privacy, phishing\n" +
                                  "  - 'tell me more' for additional tips\n\n" +
-                                 "ACTIVITY LOG:\n" +
-                                 "  - 'Show activity log' - View recent actions\n\n" +
                                  "GENERAL:\n" +
                                  "  - 'How are you?' - Check in with me\n" +
                                  "  - 'What's your purpose?' - Learn about me\n" +

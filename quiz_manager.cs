@@ -276,6 +276,11 @@ namespace cybersecurity_chatbot_p2
             return questions.Count;
         }//end of method
 
+        public int GetScore()
+        {//start of method
+            return score;
+        }//end of method
+
     }//end of class
 
     // Quiz Question Class
