@@ -1,130 +1,199 @@
-# Cybersecurity Awareness Chatbot - Part 2
+# 🛡️ Ruby - Cybersecurity Awareness Chatbot
 
 ## Project Overview
 
-This is a **Graphical User Interface (GUI)** cybersecurity awareness chatbot developed for South African citizens as part of a national cybersecurity education campaign. The chatbot helps users learn about online safety practices including password safety, phishing awareness, scam detection, privacy protection, and safe browsing habits.
-
-**Chatbot Name:** Ruby
-
-**Technology:** WPF (Windows Presentation Foundation) with C#
+Ruby is a comprehensive Cybersecurity Awareness Chatbot developed in C# using Windows Presentation Foundation (WPF). This application is designed to educate South African citizens about online safety through interactive conversation, task management, a cybersecurity quiz, sentiment detection, and natural language processing simulation.
 
 ---
 
-## Part 2 Enhancements
+## 📌 Project Information
 
-Part 2 builds upon Part 1 by introducing:
-
-| Feature | Description |
-|---------|-------------|
-| **GUI Interface** | Professional WPF interface with 3-screen navigation |
-| **Keyword Recognition** | Detects cybersecurity topics (password, scam, privacy, phishing) |
-| **Random Responses** | Multiple responses for each topic using arrays/lists |
-| **Conversation Flow** | Handles follow-up questions like "tell me more" |
-| **Memory & Recall** | Stores user name and interests in text files |
-| **Sentiment Detection** | Detects emotions (worried, frustrated, confused, happy, sad, angry) |
-| **Voice Greeting** | Plays welcome audio on application launch |
-| **Error Handling** | Graceful handling of empty inputs and unrecognised questions |
+| **Detail** | **Information** |
+|------------|-----------------|
+| **Project Name** | Cybersecurity Awareness Chatbot - Part 3/POE |
+| **Chatbot Name** | Ruby |
+| **Platform** | WPF (Windows Presentation Foundation) |
+| **Language** | C# |
+| **Database** | SQL Server (LocalDB) |
+| **Framework** | .NET Framework / .NET Core |
+| **Version** | 3.0 (Final) |
 
 ---
 
-## Features Implemented
+## 🎯 Features Implemented
 
-### 1. GUI Design (Requirement 1)
-
-- **Three-screen navigation:**
-  - Home Grid: Welcome screen with logo and continue button
-  - Username Grid: Name collection with validation
-  - Chat Grid: Main conversation interface
-
-- **Color Scheme:** White and light green theme
-  - Background: White (#FFFFFF)
-  - Accent Color: Light Green (#4CAF50)
-  - Header Background: Light Green (#E8F5E9)
-  - User Messages: Light green bubbles aligned right
-  - Bot Messages: White bubbles with green border aligned left
-
-### 2. Voice Greeting (Requirement 1a)
-
-- Plays `greet.wav` audio file when application starts
-- Uses `System.Media.SoundPlayer` class
+### 1. Voice Greeting
+- Plays a recorded WAV audio file when the application launches
+- Welcomes users with a friendly message
 - Automatic path resolution for deployment
 
-### 3. Keyword Recognition (Requirement 2)
+### 2. GUI Design
+- Three-screen navigation: Home → Username → Chat
+- Modern design with rounded corners and professional colour scheme
+- Quick action buttons for common commands
+- Chat bubbles with distinct styling for user and bot messages
 
-The chatbot recognises the following cybersecurity keywords:
+### 3. Keyword Recognition
+- Detects cybersecurity topics:
+  - **Password** - Provides password safety tips
+  - **Scam/Fraud** - Provides scam awareness tips
+  - **Privacy** - Provides privacy protection tips
+  - **Phishing** - Provides phishing detection tips
+  - **Cybersecurity** - Provides general cybersecurity information
 
-| Keyword | Example Response |
-|---------|------------------|
-| "password" | "Make sure to use strong, unique passwords for each account..." |
-| "scam" | "Scammers often create urgency to trick you. Take your time..." |
-| "privacy" | "Protect your privacy by reviewing app permissions regularly..." |
-| "phishing" | "Be cautious of emails asking for personal information..." |
-| "cybersecurity" | "Cybersecurity is about protecting systems from digital threats..." |
+### 4. Random Responses
+- Multiple predefined responses for each topic
+- Random selection creates varied and natural conversations
+- Prevents repetitive or robotic responses
 
-### 4. Random Responses (Requirement 3)
+### 5. Conversation Flow
+- Handles follow-up questions like "tell me more"
+- Tracks the last discussed topic for continuity
+- Creates a natural, seamless conversation experience
 
-- Each topic has multiple predefined responses stored in a `Dictionary<string, List<string>>`
-- Responses are randomly selected using `Random` class
-- Example: Phishing tips have 5 different responses
+### 6. Memory and Recall
+- Stores user names in `user_names.txt`
+- Stores user interests in `user_interests.txt`
+- Personalises welcome messages for returning users
+- Recalls user interests for personalised conversations
 
-### 5. Conversation Flow (Requirement 4)
+### 7. Sentiment Detection
+- Detects user emotions:
+  - **Worried/Concerned** - Provides reassuring response with safety tips
+  - **Frustrated/Annoyed** - Offers support and step-by-step assistance
+  - **Confused/Unsure** - Provides clear explanations
+  - **Happy/Great** - Responds with positivity
+  - **Sad/Upset** - Offers emotional support
+  - **Angry/Mad** - Provides calming assistance
+- Adjusts responses based on user's emotional state
 
-- Tracks the last discussed topic using `lastTopic` variable
-- Handles follow-up phrases:
-  - "tell me more"
-  - "another tip"
-  - "explain more"
-  - "more information"
-- Provides additional responses without requiring the user to re-ask
+### 8. Task Assistant (with Reminders)
+- Add tasks with descriptions
+- Set reminders with specific dates
+- View all tasks with status
+- View pending tasks only
+- Mark tasks as completed
+- Delete tasks
+- All changes reflected in SQL Server database
 
-### 6. Memory and Recall (Requirement 5)
+### 9. Cybersecurity Quiz
+- 12 questions covering:
+  - Phishing detection
+  - Password safety
+  - Safe browsing
+  - Social engineering
+  - General cybersecurity
+- Mix of Multiple Choice and True/False questions
+- Immediate feedback with explanations
+- Score tracking with percentage
+- Feedback based on performance:
+  - 10-12 correct: "Outstanding! You're a cybersecurity pro!"
+  - 8-9 correct: "Great job! Excellent cybersecurity awareness!"
+  - 6-7 correct: "Good effort! Keep learning!"
+  - 4-5 correct: "Keep learning! Review the topics and try again!"
+  - 0-3 correct: "Don't give up! Cybersecurity is a learning journey!"
 
-**User Name Storage:**
-- Stores names in `user_names.txt`
-- Welcomes new users with "Hey [name]! Welcome to Ruby!"
-- Welcomes returning users with "Hey [name]! Welcome back to Ruby!"
+### 10. NLP Simulation
+- Recognises varied user phrasings
+- Detects user intent using keyword patterns
+- Handles different ways to say the same thing:
+  - "Add task" / "Create task" / "New task"
+  - "Show tasks" / "View tasks" / "List tasks"
+  - "Start quiz" / "Play quiz" / "Take quiz"
+  - "Remind me" / "Set reminder" / "Notify me"
+  - "Show activity log" / "What have you done for me?"
 
-**User Interests Storage:**
-- Stores interests when user says "I'm interested in [topic]"
-- Saves to `user_interests.txt` in format: `username|interest1,interest2`
-- Recalls interests for personalised conversations
-
-### 7. Sentiment Detection (Requirement 6)
-
-Detects the following sentiments and responds empathetically:
-
-| Sentiment | Detection Keywords | Response Example |
-|-----------|-------------------|------------------|
-| Worried | worried, concerned, nervous | "It's completely understandable to feel that way..." + tip |
-| Frustrated | frustrated, annoyed | "I understand you're frustrated. Let's work through this..." |
-| Confused | confused, unsure, don't understand | "That's okay, confusion is normal..." + explanation |
-| Happy | happy, great, awesome | "That's great to hear! I'm glad you're having a good day..." |
-| Sad | sad, upset, depressed | "I'm sorry you're feeling this way. I'm here for you..." |
-| Angry | angry, mad, furious | "I understand you're angry. Let's solve this together..." |
-
-### 8. Error Handling (Requirement 7)
-
-- Empty input validation with friendly error messages
-- Default responses for unrecognised questions
-- File existence checks before reading/writing
-- Null checks for all user inputs
-
-### 9. Code Optimisation (Requirement 8)
-
-**Data Structures Used:**
-- `Dictionary<string, List<string>>` for topic-response storage
-- `ArrayList` for reply storage and ignore words
-- `Random` class for response selection
-
-**Object-Oriented Design:**
-- `response_finder` - Finds responses by topic
-- `response_handler` - Handles default responses and input cleaning
-- `topic_detector` - Detects topics from user input
-- `message_displayer` - Manages chat display formatting
-- `sentiment_detector` - Detects and responds to user emotions
-- `voice_greeting` - Plays audio greeting
-- `respond` - Stores all response data
+### 11. Activity Log
+- Records all user actions with timestamps
+- Tracks:
+  - User login
+  - Tasks added, completed, deleted
+  - Reminders set
+  - Quiz started and completed
+  - NLP interpretations
+  - Sentiment detection
+  - Follow-up responses
+  - Activity log views
+- Displays last 10 actions
+- Shows total count of activities
 
 ---
 
-## Project Structure
+## 🗂️ Project Structure
+cybersecurity_chatbot_p2/
+├── MainWindow.xaml # GUI design
+├── MainWindow.xaml.cs # Main application logic
+├── quiz_manager.cs # Quiz functionality
+├── task_manager.cs # Database operations
+├── nlp_processor.cs # NLP intent detection
+├── sentiment_detector.cs # Emotion detection
+├── message_displayer.cs # Chat display formatting
+├── topic_detector.cs # Topic identification
+├── response_finder.cs # Response lookup
+├── response_handler.cs # Default responses
+├── respond.cs # Response data storage
+├── voice_greeting.cs # Audio playback
+├── logo.jpeg # Application logo
+├── greet.wav # Voice greeting audio
+├── user_names.txt # User name storage (auto-generated)
+├── user_interests.txt # User interests (auto-generated)
+├── App.config # Application configuration
+└── README.md # Project documentation
+
+
+---
+
+## 📊 Database Schema
+
+### Tasks Table
+
+| Column | Data Type | Description |
+|--------|-----------|-------------|
+| `task_id` | INT (Primary Key, Identity) | Unique task identifier |
+| `username` | VARCHAR(50) | User's name |
+| `task_name` | VARCHAR(100) | Task title |
+| `task_description` | VARCHAR(200) | Task description |
+| `task_due_date` | VARCHAR(20) | Due date for reminder |
+| `task_status` | VARCHAR(20) | Pending / Completed |
+| `reminder_date` | VARCHAR(20) | Reminder date |
+| `date_created` | DATETIME | Date task was created |
+
+---
+
+## 🚀 How to Run the Application
+
+### Prerequisites
+- Windows Operating System
+- .NET Framework 4.7.2 or higher
+- Visual Studio 2019/2022 or any C# IDE
+- SQL Server LocalDB (included with Visual Studio)
+
+🎬 Video Presentation
+An unlisted YouTube video has been created demonstrating:
+
+Full explanation of code structure and logic
+
+Demonstration of the GUI application running
+
+Walkthrough of all features:
+
+Task Assistant with database
+
+Cybersecurity Quiz with score tracking
+
+Sentiment Detection with empathetic responses
+
+NLP Simulation with varied phrasings
+
+Activity Log with timestamps
+
+https://youtu.be/H4PdzL7VuHw
+
+👨‍💻 Author
+Name: [Lufuno Ramasuvha]
+
+Project: Cybersecurity Awareness Chatbot - Part 3/POE
+
+Course: [Programming6221]
+
+Date: June 2026
