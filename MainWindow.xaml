@@ -5,86 +5,181 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:cybersecurity_chatbot_p2"
         mc:Ignorable="d"
-        Title="Ruby - Cybersecurity Assistant" Height="650" Width="950"
+        Title="Ruby - Cybersecurity Assistant" Height="600" Width="800"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanResize"
-        Background="White">
+        Background="#EDF2F7"
+        WindowStyle="SingleBorderWindow">
 
-    <Grid Background="White">
+    <Window.Resources>
+        <!-- Modern Button Style -->
+        <Style x:Key="ModernButton" TargetType="Button">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="45"/>
+            <Setter Property="Width" Value="200"/>
+            <Setter Property="Background" Value="#38A169"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="25" 
+                                BorderThickness="0"
+                                Padding="20,0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#2F855A"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#276749"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Quick Action Button Style -->
+        <Style x:Key="QuickActionButton" TargetType="Button">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="28"/>
+            <Setter Property="Padding" Value="12,0"/>
+            <Setter Property="Background" Value="#E2E8F0"/>
+            <Setter Property="Foreground" Value="#2D3748"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="14" 
+                                BorderThickness="0">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#CBD5E0"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#A0AEC0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TextBox Style -->
+        <Style x:Key="ModernTextBox" TargetType="TextBox">
+            <Setter Property="FontFamily" Value="Segoe UI"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#38A169"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="Foreground" Value="#2D3748"/>
+            <Setter Property="CaretBrush" Value="#38A169"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                CornerRadius="12">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="0"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#2F855A"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="#EDF2F7">
 
         <!-- HOME GRID - Welcome Screen -->
         <Grid 
             x:Name="home_grid" 
             Visibility="Visible" 
-            Background="White">
+            Background="#EDF2F7">
 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Logo Image -->
             <Image 
                 Source="/logo.jpeg" 
-                Height="200" 
-                Width="300" 
-                Margin="0,0,0,220"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"/>
-
-            <TextBlock 
-                Text="Welcome to Ruby, your Cybersecurity Assistant!" 
-                Height="35" 
-                Width="500" 
-                TextAlignment="Center" 
-                Margin="0,30,0,0"
-                FontFamily="Segoe UI" 
-                FontWeight="Bold" 
-                FontSize="20"
-                Foreground="#2E7D32"
-                VerticalAlignment="Top"
+                Height="160" 
+                Width="240" 
+                Grid.Row="1"
                 HorizontalAlignment="Center"/>
 
+            <!-- Welcome Title -->
+            <StackPanel Grid.Row="2" Margin="0,10,0,0">
+                <TextBlock 
+                    Text="Welcome to Ruby" 
+                    FontFamily="Segoe UI" 
+                    FontWeight="Bold" 
+                    FontSize="28"
+                    Foreground="#22543D"
+                    HorizontalAlignment="Center"/>
+
+                <TextBlock 
+                    Text="Your Cybersecurity Assistant" 
+                    FontFamily="Segoe UI" 
+                    FontWeight="SemiBold" 
+                    FontSize="15"
+                    Foreground="#38A169"
+                    HorizontalAlignment="Center"
+                    Margin="0,3,0,0"/>
+            </StackPanel>
+
+            <!-- Subtitle -->
             <TextBlock 
+                Grid.Row="3"
                 Text="Learn about online safety, manage tasks, and test your knowledge"
-                Height="25" 
-                Width="450" 
-                TextAlignment="Center" 
-                Margin="0,70,0,0"
                 FontFamily="Segoe UI" 
-                FontSize="13" 
-                Foreground="#555555"
-                VerticalAlignment="Top"
-                HorizontalAlignment="Center"/>
-
-            <Button 
-                Height="50" 
-                Width="220" 
-                Margin="0,0,0,150" 
-                Content="Continue"
-                Click="proceed" 
-                Background="#4CAF50" 
-                Foreground="White"
-                FontWeight="Bold" 
-                FontSize="15" 
-                FontFamily="Segoe UI"
-                BorderBrush="#388E3C" 
-                BorderThickness="1"
-                VerticalAlignment="Bottom"
+                FontSize="12" 
+                Foreground="#718096"
                 HorizontalAlignment="Center"
-                Cursor="Hand">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="8"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
+                Margin="0,10,0,20"/>
 
+            <!-- Continue Button -->
+            <Button 
+                Grid.Row="3"
+                Style="{StaticResource ModernButton}"
+                Content="Get Started"
+                Click="proceed"
+                Margin="0,50,0,0"
+                VerticalAlignment="Top"/>
+
+            <!-- Version Info -->
             <TextBlock 
+                Grid.Row="4"
                 Text="Version 3.0 | Cybersecurity Awareness Chatbot"
-                Height="20" 
-                Width="300" 
-                TextAlignment="Center" 
-                Margin="0,0,0,20"
                 FontFamily="Segoe UI" 
                 FontSize="10" 
-                Foreground="#999999"
+                Foreground="#A0AEC0"
+                HorizontalAlignment="Center"
                 VerticalAlignment="Bottom"
-                HorizontalAlignment="Center"/>
+                Margin="0,0,0,15"/>
 
         </Grid>
 
@@ -92,101 +187,80 @@
         <Grid 
             x:Name="username_grid" 
             Visibility="Hidden" 
-            Background="White">
+            Background="#EDF2F7">
 
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Logo Image -->
             <Image 
                 Source="/logo.jpeg" 
-                Height="150" 
-                Width="225" 
-                Margin="0,0,0,230"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"/>
-
-            <TextBlock 
-                Text="Let's get started!" 
-                Height="30" 
-                Width="350" 
-                TextAlignment="Center" 
-                Margin="0,20,0,0"
-                FontFamily="Segoe UI" 
-                FontWeight="Bold" 
-                FontSize="18"
-                Foreground="#2E7D32"
-                VerticalAlignment="Top"
+                Height="120" 
+                Width="180" 
+                Grid.Row="1"
                 HorizontalAlignment="Center"/>
 
+            <!-- Title -->
             <TextBlock 
+                Grid.Row="2"
+                Text="Let's get started!" 
+                FontFamily="Segoe UI" 
+                FontWeight="Bold" 
+                FontSize="24"
+                Foreground="#22543D"
+                HorizontalAlignment="Center"
+                Margin="0,10,0,0"/>
+
+            <!-- Subtitle -->
+            <TextBlock 
+                Grid.Row="3"
                 Text="Enter your name to personalize your experience"
-                Height="22" 
-                Width="350" 
-                TextAlignment="Center" 
-                Margin="0,52,0,0"
                 FontFamily="Segoe UI" 
                 FontSize="12" 
-                Foreground="#888888"
-                VerticalAlignment="Top"
-                HorizontalAlignment="Center"/>
-
-            <TextBox 
-                Height="48" 
-                Width="320" 
-                TextAlignment="Center" 
-                Margin="0,0,0,160"
-                FontFamily="Segoe UI" 
-                FontSize="16" 
-                x:Name="usernames_input"
-                Background="White" 
-                BorderBrush="#4CAF50" 
-                BorderThickness="2"
-                Foreground="#333333" 
-                CaretBrush="#4CAF50"
-                VerticalAlignment="Center"
+                Foreground="#718096"
                 HorizontalAlignment="Center"
-                MaxLength="30">
-                <TextBox.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="8"/>
-                    </Style>
-                </TextBox.Resources>
-            </TextBox>
+                Margin="0,3,0,15"/>
 
-            <TextBlock 
-                Text="Please enter your name to continue..."
-                Height="22" 
+            <!-- Username TextBox -->
+            <TextBox 
+                Grid.Row="4"
+                Style="{StaticResource ModernTextBox}"
+                Height="42" 
                 Width="300" 
                 TextAlignment="Center" 
-                Margin="0,0,0,100"
-                Foreground="#F44336" 
-                FontFamily="Segoe UI" 
-                FontSize="12"
-                FontWeight="SemiBold"
-                Visibility="Collapsed" 
-                x:Name="errorMessage"
-                VerticalAlignment="Center"
+                x:Name="usernames_input"
+                MaxLength="30"
                 HorizontalAlignment="Center"/>
 
-            <Button 
-                Height="48" 
-                Width="220" 
-                Margin="0,0,0,80" 
-                Content="Start Chatting"
-                Click="submit_name" 
-                Background="#4CAF50" 
-                Foreground="White"
-                FontWeight="Bold" 
-                FontSize="15" 
-                FontFamily="Segoe UI"
-                BorderBrush="#388E3C" 
-                BorderThickness="1"
-                VerticalAlignment="Bottom"
+            <!-- Error Message -->
+            <TextBlock 
+                Grid.Row="5"
+                Text="Please enter your name to continue..."
+                FontFamily="Segoe UI" 
+                FontSize="11" 
+                FontWeight="SemiBold"
+                Foreground="#FC8181" 
+                Visibility="Collapsed" 
+                x:Name="errorMessage"
                 HorizontalAlignment="Center"
-                Cursor="Hand">
-                <Button.Resources>
-                    <Style TargetType="Border">
-                        <Setter Property="CornerRadius" Value="8"/>
-                    </Style>
-                </Button.Resources>
-            </Button>
+                Margin="0,8,0,0"/>
+
+            <!-- Submit Button -->
+            <Button 
+                Grid.Row="5"
+                Style="{StaticResource ModernButton}"
+                Content="Start Chatting"
+                Click="submit_name"
+                Margin="0,45,0,0"
+                VerticalAlignment="Top"
+                HorizontalAlignment="Center"/>
 
         </Grid>
 
@@ -194,7 +268,7 @@
         <Grid 
             x:Name="chat_grid" 
             Visibility="Hidden" 
-            Background="White">
+            Background="#EDF2F7">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -205,65 +279,85 @@
             <!-- CHAT HEADER -->
             <Border 
                 Grid.Row="0"
-                Height="60" 
-                Background="#E8F5E9"
-                BorderBrush="#C8E6C9"
-                BorderThickness="0,0,0,1">
+                Height="55" 
+                Background="#22543D"
+                BorderBrush="#276749"
+                BorderThickness="0,0,0,2">
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
-                    <TextBlock 
-                        Text="Ruby" 
-                        VerticalAlignment="Center"
-                        FontSize="20"
-                        FontWeight="Bold"
-                        Foreground="#2E7D32"/>
-
-                    <TextBlock 
-                        Text=" - Cybersecurity Assistant" 
-                        VerticalAlignment="Center"
-                        Foreground="#2E7D32" 
-                        FontSize="18" 
-                        FontWeight="Bold"
-                        FontFamily="Segoe UI"
-                        Margin="5,0,0,0"/>
-
-                    <Border 
-                        Background="#4CAF50" 
-                        CornerRadius="10"
-                        Height="16"
-                        Width="16"
-                        Margin="10,0,0,0"
-                        VerticalAlignment="Center">
-                        <TextBlock 
-                            Text="O" 
-                            Foreground="White"
-                            FontSize="10"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            FontWeight="Bold"/>
+                    <!-- Bot Icon -->
+                    <Border Grid.Column="0" 
+                            Width="34" 
+                            Height="34" 
+                            Background="#E6FFFA" 
+                            CornerRadius="17"
+                            Margin="15,0,0,0">
+                        <TextBlock Text="R" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="#22543D"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
                     </Border>
 
-                    <TextBlock 
-                        Text="Online" 
-                        FontSize="11"
-                        Foreground="#4CAF50"
-                        FontWeight="SemiBold"
-                        Margin="3,0,0,0"
-                        VerticalAlignment="Center"/>
+                    <!-- Title -->
+                    <StackPanel Grid.Column="1" 
+                                Orientation="Horizontal" 
+                                HorizontalAlignment="Center" 
+                                VerticalAlignment="Center">
+                        <TextBlock 
+                            Text="Ruby" 
+                            FontSize="18" 
+                            FontWeight="Bold"
+                            Foreground="#FFFFFF"
+                            FontFamily="Segoe UI"/>
 
-                </StackPanel>
+                        <TextBlock 
+                            Text=" - Cybersecurity Assistant" 
+                            FontSize="13" 
+                            FontWeight="SemiBold"
+                            Foreground="#E6FFFA" 
+                            FontFamily="Segoe UI"
+                            Margin="6,0,0,0"/>
+                    </StackPanel>
 
+                    <!-- Status Indicator -->
+                    <StackPanel Grid.Column="2" 
+                                Orientation="Horizontal" 
+                                VerticalAlignment="Center"
+                                Margin="0,0,15,0">
+                        <Border 
+                            Background="#48BB78" 
+                            CornerRadius="8"
+                            Height="10"
+                            Width="10">
+                            <TextBlock 
+                                Text=" " 
+                                Foreground="Transparent"/>
+                        </Border>
+                        <TextBlock 
+                            Text="Online" 
+                            FontSize="10"
+                            Foreground="#E6FFFA"
+                            FontWeight="SemiBold"
+                            Margin="4,0,0,0"/>
+                    </StackPanel>
+                </Grid>
             </Border>
 
             <!-- CHAT MESSAGES LIST -->
             <ListView 
                 Grid.Row="1"
                 x:Name="chats" 
-                Margin="10,10,10,10"
-                Background="White" 
-                BorderBrush="#C8E6C9"
-                BorderThickness="1"
+                Margin="10,10,10,8"
+                Background="Transparent" 
+                BorderThickness="0"
                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                 ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <ListView.Resources>
@@ -275,176 +369,163 @@
                         <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                     </Style>
                 </ListView.Resources>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Margin" Value="0"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
             </ListView>
 
             <!-- INPUT AREA -->
             <Grid 
                 Grid.Row="2" 
-                Margin="10,0,10,15"
+                Margin="10,0,10,10"
                 Height="95">
 
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
                 <!-- Quick Action Buttons -->
-                <StackPanel 
+                <WrapPanel 
                     Grid.Row="0" 
                     Orientation="Horizontal" 
-                    VerticalAlignment="Top" 
                     Margin="0,0,0,5">
 
                     <Button 
                         Content="Tasks" 
-                        Height="28" 
-                        Width="65" 
-                        FontSize="10" 
-                        Background="#4CAF50" 
+                        Style="{StaticResource QuickActionButton}"
+                        Background="#38A169" 
                         Foreground="White"
-                        BorderBrush="#388E3C" 
-                        BorderThickness="1"
-                        Click="quick_action_tasks"
-                        Cursor="Hand">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="5"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
+                        Click="quick_action_tasks"/>
 
                     <Button 
                         Content="Quiz" 
-                        Height="28" 
-                        Width="55" 
-                        FontSize="10" 
-                        Background="#FF9800" 
+                        Style="{StaticResource QuickActionButton}"
+                        Background="#ED8936" 
                         Foreground="White"
-                        BorderBrush="#E65100" 
-                        BorderThickness="1"
-                        Margin="5,0,0,0"
-                        Click="quick_action_quiz"
-                        Cursor="Hand">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="5"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
+                        Margin="4,0,0,0"
+                        Click="quick_action_quiz"/>
 
                     <Button 
                         Content="Log" 
-                        Height="28" 
-                        Width="55" 
-                        FontSize="10" 
-                        Background="#2196F3" 
+                        Style="{StaticResource QuickActionButton}"
+                        Background="#4299E1" 
                         Foreground="White"
-                        BorderBrush="#1565C0" 
-                        BorderThickness="1"
-                        Margin="5,0,0,0"
-                        Click="quick_action_log"
-                        Cursor="Hand">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="5"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
+                        Margin="4,0,0,0"
+                        Click="quick_action_log"/>
 
                     <Button 
                         Content="Help" 
-                        Height="28" 
-                        Width="55" 
-                        FontSize="10" 
-                        Background="#9E9E9E" 
+                        Style="{StaticResource QuickActionButton}"
+                        Background="#A0AEC0" 
                         Foreground="White"
-                        BorderBrush="#757575" 
-                        BorderThickness="1"
-                        Margin="5,0,0,0"
-                        Click="quick_action_help"
-                        Cursor="Hand">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="5"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
+                        Margin="4,0,0,0"
+                        Click="quick_action_help"/>
 
                     <Button 
                         Content="Clear" 
-                        Height="28" 
-                        Width="55" 
-                        FontSize="10" 
-                        Background="#F44336" 
+                        Style="{StaticResource QuickActionButton}"
+                        Background="#FC8181" 
                         Foreground="White"
-                        BorderBrush="#C62828" 
-                        BorderThickness="1"
-                        Margin="5,0,0,0"
-                        Click="quick_action_clear"
-                        Cursor="Hand">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="5"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
+                        Margin="4,0,0,0"
+                        Click="quick_action_clear"/>
 
-                </StackPanel>
+                </WrapPanel>
 
                 <!-- Input Row -->
-                <Grid Grid.Row="1" Margin="0,5,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBox 
-                        x:Name="question" 
-                        Grid.Column="0"
-                        Height="48" 
-                        VerticalAlignment="Bottom"
-                        FontFamily="Segoe UI" 
-                        FontSize="14"
-                        Padding="15,10,15,10" 
+                <Border Grid.Row="1" 
                         Background="White" 
-                        BorderBrush="#4CAF50"
-                        BorderThickness="2" 
-                        Foreground="#333333" 
-                        CaretBrush="#4CAF50"
-                        TextWrapping="Wrap"
-                        KeyDown="question_KeyDown"
-                        AcceptsReturn="False">
-                        <TextBox.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="8"/>
-                            </Style>
-                        </TextBox.Resources>
-                    </TextBox>
+                        CornerRadius="12"
+                        BorderBrush="#38A169"
+                        BorderThickness="2"
+                        Height="44">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                    <Button 
-                        Height="48" 
-                        Width="130" 
-                        Grid.Column="1"
-                        Margin="10,0,0,0" 
-                        VerticalAlignment="Bottom"
-                        Content="Send" 
-                        Click="send" 
-                        Background="#4CAF50" 
-                        Foreground="White"
-                        FontWeight="Bold" 
-                        FontSize="14" 
-                        FontFamily="Segoe UI"
-                        BorderBrush="#388E3C" 
-                        BorderThickness="1"
-                        Cursor="Hand">
-                        <Button.Resources>
-                            <Style TargetType="Border">
-                                <Setter Property="CornerRadius" Value="8"/>
-                            </Style>
-                        </Button.Resources>
-                    </Button>
+                        <TextBox 
+                            x:Name="question" 
+                            Grid.Column="0"
+                            Height="40" 
+                            VerticalAlignment="Center"
+                            FontFamily="Segoe UI" 
+                            FontSize="13"
+                            Background="Transparent" 
+                            BorderThickness="0"
+                            Foreground="#2D3748" 
+                            CaretBrush="#38A169"
+                            TextWrapping="Wrap"
+                            KeyDown="question_KeyDown"
+                            AcceptsReturn="False"
+                            Padding="12,0"/>
 
-                </Grid>
+                        <!-- Placeholder Text -->
+                        <TextBlock Text="Type your message..." 
+                                   FontFamily="Segoe UI" 
+                                   FontSize="13" 
+                                   Foreground="#A0AEC0"
+                                   VerticalAlignment="Center"
+                                   HorizontalAlignment="Left"
+                                   Margin="12,0,0,0"
+                                   IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text.Length, ElementName=question}" Value="0">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Text.Length, ElementName=question}" Value="1">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <!-- Send Button -->
+                        <Button 
+                            Grid.Column="1"
+                            Height="36" 
+                            Width="90" 
+                            Margin="8,0,8,0" 
+                            Content="Send"
+                            Click="send" 
+                            Background="#38A169" 
+                            Foreground="White"
+                            FontWeight="SemiBold" 
+                            FontSize="13" 
+                            FontFamily="Segoe UI"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            VerticalAlignment="Center">
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" 
+                                            CornerRadius="8" 
+                                            BorderThickness="0">
+                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#2F855A"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="True">
+                                            <Setter Property="Background" Value="#276749"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </Grid>
+                </Border>
 
             </Grid>
 
@@ -453,10 +534,11 @@
                 Grid.Row="2"
                 Text="Try: 'Add task', 'Show tasks', 'Start quiz', 'Show activity log'"
                 VerticalAlignment="Bottom" 
-                Margin="15,0,0,78" 
-                FontSize="10"       
-                Foreground="#888888" 
-                FontFamily="Segoe UI"/>
+                Margin="10,0,0,68" 
+                FontSize="9"       
+                Foreground="#A0AEC0" 
+                FontFamily="Segoe UI"
+                FontWeight="SemiBold"/>
 
         </Grid>
 
