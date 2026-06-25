@@ -27,6 +27,7 @@ namespace cybersecurity_chatbot_p2
         private message_displayer displayer;
         private sentiment_detector sentimentDetector;
         private task_manager taskManager;
+        private quiz_manager quizManager;
 
         //variables to store the last detected topic for follow-up questions
         private string username = string.Empty;
@@ -36,6 +37,9 @@ namespace cybersecurity_chatbot_p2
         private bool awaitingReminderResponse = false;
         private string pendingTaskName = "";
         private string pendingTaskDescription = "";
+
+        // Activity Log
+        private List<string> activityLog = new List<string>();
 
         public MainWindow()
         {//start of constructor
@@ -53,6 +57,12 @@ namespace cybersecurity_chatbot_p2
             detector = new topic_detector();
             displayer = new message_displayer(chats);
             sentimentDetector = new sentiment_detector(reply, finder, displayer);
+
+            // Initialize Quiz Manager
+            quizManager = new quiz_manager();
+
+            // Add welcome message to activity log
+            AddToActivityLog("Application started");
 
         }//end of constructor
 
@@ -107,6 +117,9 @@ namespace cybersecurity_chatbot_p2
             // Initialize TaskManager after username is set
             taskManager = new task_manager(username);
 
+            // Add to activity log
+            AddToActivityLog("User logged in: " + username);
+
             username_grid.Visibility = Visibility.Hidden;
             chat_grid.Visibility = Visibility.Visible;
 
@@ -129,9 +142,10 @@ namespace cybersecurity_chatbot_p2
             }//end of if
 
             displayer.ShowMessage(username, userInput);
+            AddToActivityLog("User: " + userInput);
 
             // ============================================================
-            // CHECK: Are we waiting for a reminder response? (PRIORITY 1)
+            // PRIORITY 1: Are we waiting for a reminder response?
             // ============================================================
             if (awaitingReminderResponse)
             {//start of if
@@ -151,6 +165,7 @@ namespace cybersecurity_chatbot_p2
                 {//start of else if
                     string result = taskManager.add_task(pendingTaskName, pendingTaskDescription, "");
                     displayer.ShowMessage("Ruby", result);
+                    AddToActivityLog("Task added: " + pendingTaskName + " (No reminder)");
                     awaitingReminderResponse = false;
                     pendingTaskName = "";
                     pendingTaskDescription = "";
@@ -167,9 +182,8 @@ namespace cybersecurity_chatbot_p2
             }//end of if
 
             // ============================================================
-            // CHECK: Are we waiting for days input? (PRIORITY 2)
+            // PRIORITY 2: Are we waiting for days input?
             // ============================================================
-            // Check if the input is a number (days) and we have a pending task
             if (!string.IsNullOrEmpty(pendingTaskName) && IsNumeric(userInput))
             {//start of if
                 int days = int.Parse(userInput);
@@ -178,6 +192,7 @@ namespace cybersecurity_chatbot_p2
                     string reminderDate = DateTime.Now.AddDays(days).ToString("yyyy-MM-dd");
                     string result = taskManager.add_task(pendingTaskName, pendingTaskDescription, reminderDate);
                     displayer.ShowMessage("Ruby", "Got it! " + result);
+                    AddToActivityLog("Task added: " + pendingTaskName + " (Reminder in " + days + " days)");
                     pendingTaskName = "";
                     pendingTaskDescription = "";
                     question.Clear();
@@ -192,7 +207,7 @@ namespace cybersecurity_chatbot_p2
             }//end of if
 
             // ============================================================
-            // CHECK: Task Assistant Commands (PRIORITY 3)
+            // PRIORITY 3: Task Assistant Commands
             // ============================================================
             if (taskManager != null && handle_task_assistant_command(userInput))
             {//start of if
@@ -201,7 +216,16 @@ namespace cybersecurity_chatbot_p2
             }//end of if
 
             // ============================================================
-            // CHECK: Sentiment Detection (PRIORITY 4)
+            // PRIORITY 4: Quiz Commands
+            // ============================================================
+            if (handle_quiz_command(userInput))
+            {//start of if
+                question.Clear();
+                return;
+            }//end of if
+
+            // ============================================================
+            // PRIORITY 5: Sentiment Detection
             // ============================================================
             if (sentimentDetector.DetectSentiment(userInput))
             {//start of if
@@ -210,7 +234,7 @@ namespace cybersecurity_chatbot_p2
             }//end of if
 
             // ============================================================
-            // CHECK: Follow-up Questions (PRIORITY 5)
+            // PRIORITY 6: Follow-up Questions
             // ============================================================
             string fullInput = userInput.ToLower();
             if (fullInput.Contains("more") || fullInput.Contains("another tip") ||
@@ -220,13 +244,14 @@ namespace cybersecurity_chatbot_p2
                 {//start of if
                     string response = finder.FindResponseByTopic(lastTopic);
                     displayer.ShowMessage("Ruby", response);
+                    AddToActivityLog("Follow-up response given for: " + lastTopic);
                     question.Clear();
                     return;
                 }//end of if
             }//end of if
 
             // ============================================================
-            // CHECK: Interest Statements (Memory Feature) (PRIORITY 6)
+            // PRIORITY 7: Interest Statements (Memory Feature)
             // ============================================================
             if (fullInput.Contains("interested in"))
             {//start of if
@@ -236,24 +261,38 @@ namespace cybersecurity_chatbot_p2
                     store_interest(username, interest);
                     displayer.ShowMessage("Ruby", "Great! I'll remember that you're interested in " + interest +
                                           ". It's a crucial part of staying safe online.");
+                    AddToActivityLog("User interest stored: " + interest);
                     question.Clear();
                     return;
                 }//end of if
             }//end of if
 
             // ============================================================
-            // CHECK: Topic Detection (PRIORITY 7)
+            // PRIORITY 8: Activity Log Command
+            // ============================================================
+            if (fullInput.Contains("activity log") || fullInput.Contains("show log") ||
+                fullInput.Contains("what have you done") || fullInput.Contains("show activity"))
+            {//start of if
+                string log = GetActivityLog();
+                displayer.ShowMessage("Ruby", log);
+                AddToActivityLog("Activity log viewed");
+                question.Clear();
+                return;
+            }//end of if
+
+            // ============================================================
+            // PRIORITY 9: Topic Detection
             // ============================================================
             string[] words = userInput.ToLower().Split(new char[] { ' ', ',', '.', '!', '?', ';', ':', '-' },
                                                        StringSplitOptions.RemoveEmptyEntries);
 
-            // Find topic and response
             string topic = detector.DetectTopic(words);
             if (!string.IsNullOrEmpty(topic))
             {//start of if
                 lastTopic = topic;
                 string response = finder.FindResponseByTopic(topic);
                 displayer.ShowMessage("Ruby", response);
+                AddToActivityLog("Response given for topic: " + topic);
             }//end of if
             else
             {//start of else
@@ -280,6 +319,7 @@ namespace cybersecurity_chatbot_p2
             {//start of if
                 string tasks = taskManager.view_tasks();
                 displayer.ShowMessage("Ruby", tasks);
+                AddToActivityLog("Viewed tasks");
                 return true;
             }//end of if
 
@@ -304,6 +344,7 @@ namespace cybersecurity_chatbot_p2
                     displayer.ShowMessage("Ruby", "Task added with description \"" + taskInfo +
                                           "\" Would you like a reminder? (Yes/No)");
                     awaitingReminderResponse = true;
+                    AddToActivityLog("Task pending: " + taskInfo + " (Awaiting reminder)");
                     return true;
                 }//end of if
                 else
@@ -325,6 +366,7 @@ namespace cybersecurity_chatbot_p2
                     {//start of if
                         string result = taskManager.complete_task(taskId);
                         displayer.ShowMessage("Ruby", result);
+                        AddToActivityLog("Task completed: " + taskName);
                         return true;
                     }//end of if
                     else
@@ -351,6 +393,7 @@ namespace cybersecurity_chatbot_p2
                     {//start of if
                         string result = taskManager.delete_task(taskId);
                         displayer.ShowMessage("Ruby", result);
+                        AddToActivityLog("Task deleted: " + taskName);
                         return true;
                     }//end of if
                     else
@@ -460,6 +503,53 @@ namespace cybersecurity_chatbot_p2
         }//end of method
 
         // ============================================================
+        // QUIZ METHODS - TASK 2
+        // ============================================================
+
+        private bool handle_quiz_command(string userInput)
+        {//start of method
+            string lowerInput = userInput.ToLower().Trim();
+
+            // Check if quiz is active and user is answering
+            if (quizManager.IsQuizActive())
+            {//start of if
+                // Check if user wants to quit
+                if (lowerInput == "quit" || lowerInput == "exit")
+                {//start of if
+                    string results = quizManager.SubmitAnswer("quit");
+
+                    displayer.ShowMessage("Ruby", results);
+                    AddToActivityLog("Quiz ended early");
+                    return true;
+                }//end of if
+
+                // Submit answer
+                string result = quizManager.SubmitAnswer(userInput);
+                displayer.ShowMessage("Ruby", result);
+
+                if (!quizManager.IsQuizActive())
+                {//start of if
+                    AddToActivityLog("Quiz completed");
+                }//end of if
+
+                return true;
+            }//end of if
+
+            // Check for "start quiz" or "play quiz"
+            if (lowerInput.Contains("start quiz") || lowerInput.Contains("play quiz") ||
+                lowerInput.Contains("take quiz") || lowerInput.Contains("quiz me") ||
+                lowerInput.Contains("test me"))
+            {//start of if
+                string result = quizManager.StartQuiz();
+                displayer.ShowMessage("Ruby", result);
+                AddToActivityLog("Quiz started");
+                return true;
+            }//end of if
+
+            return false;
+        }//end of method
+
+        // ============================================================
         // MEMORY / INTEREST METHODS
         // ============================================================
 
@@ -519,6 +609,47 @@ namespace cybersecurity_chatbot_p2
         }//end of method
 
         // ============================================================
+        // ACTIVITY LOG METHODS
+        // ============================================================
+
+        private void AddToActivityLog(string action)
+        {//start of method
+            string timestamp = DateTime.Now.ToString("HH:mm:ss");
+            activityLog.Add("[" + timestamp + "] " + action);
+
+            // Keep only last 50 entries
+            if (activityLog.Count > 50)
+            {//start of if
+                activityLog.RemoveAt(0);
+            }//end of if
+        }//end of method
+
+        private string GetActivityLog()
+        {//start of method
+            if (activityLog.Count == 0)
+            {//start of if
+                return "No activities have been logged yet.";
+            }//end of if
+
+            string result = "Recent Activity Log:\n\n";
+
+            // Show last 10 entries (or all if less than 10)
+            int startIndex = Math.Max(0, activityLog.Count - 10);
+
+            for (int i = startIndex; i < activityLog.Count; i++)
+            {//start of for
+                result += (i - startIndex + 1) + ". " + activityLog[i] + "\n";
+            }//end of for
+
+            if (activityLog.Count > 10)
+            {//start of if
+                result += "\nShowing last 10 of " + activityLog.Count + " activities.";
+            }//end of if
+
+            return result;
+        }//end of method
+
+        // ============================================================
         // QUICK ACTION METHODS
         // ============================================================
 
@@ -538,6 +669,41 @@ namespace cybersecurity_chatbot_p2
         {//start of method
             question.Text = "Show activity log";
             send(sender, e);
+        }//end of method
+
+        private void quick_action_help(object sender, RoutedEventArgs e)
+        {//start of method
+            string helpMessage = "Here's what I can help you with:\n\n" +
+                                 "TASKS:\n" +
+                                 "  - 'Add task - [description]' - Add a new task\n" +
+                                 "  - 'Show my tasks' - View all tasks\n" +
+                                 "  - 'Mark [task] as complete' - Complete a task\n" +
+                                 "  - 'Delete [task]' - Delete a task\n\n" +
+                                 "QUIZ:\n" +
+                                 "  - 'Start quiz' - Begin the cybersecurity quiz\n" +
+                                 "  - Answer with A, B, C, or D during the quiz\n" +
+                                 "  - 'quit' during quiz to exit\n\n" +
+                                 "SECURITY TOPICS:\n" +
+                                 "  - Ask me about: passwords, scams, privacy, phishing\n" +
+                                 "  - 'tell me more' for additional tips\n\n" +
+                                 "ACTIVITY LOG:\n" +
+                                 "  - 'Show activity log' - View recent actions\n\n" +
+                                 "GENERAL:\n" +
+                                 "  - 'How are you?' - Check in with me\n" +
+                                 "  - 'What's your purpose?' - Learn about me\n" +
+                                 "  - 'I'm interested in [topic]' - I'll remember your interests";
+
+            displayer.ShowMessage("Ruby", helpMessage);
+            AddToActivityLog("Help menu displayed");
+            question.Clear();
+        }//end of method
+
+        private void quick_action_clear(object sender, RoutedEventArgs e)
+        {//start of method
+            chats.Items.Clear();
+            displayer.ShowMessage("Ruby", "Chat cleared. How can I help you today?");
+            AddToActivityLog("Chat cleared");
+            question.Clear();
         }//end of method
 
         private void question_KeyDown(object sender, KeyEventArgs e)
